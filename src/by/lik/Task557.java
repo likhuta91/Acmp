@@ -28,55 +28,48 @@ public class Task557 {
 	
 	public void searchElement(String inputPath, String outputPath) {
 
-		int[][] resultMultiplicationMatrix;
 		int searchNumber;
-
 		readDataFromFile(inputPath);
+		
+		int[] resultLineMultiplicationMatrix = new int[matrixSize];
 
-		resultMultiplicationMatrix = allMatrix[0];
-
-		for (int i = 1; i < allMatrix.length; i++) {
-			resultMultiplicationMatrix = multiplicationMatrix(resultMultiplicationMatrix, i);
+		for (int i = 0; i < matrixSize; i++) {
+			resultLineMultiplicationMatrix[i] = allMatrix[0][elementLineNumber][i];
 		}
 
-		searchNumber = resultMultiplicationMatrix[elementLineNumber][elementColumnNuber];
+		for (int i = 1; i < allMatrix.length; i++) {
+			resultLineMultiplicationMatrix = multiplicationMatrix(resultLineMultiplicationMatrix, i);
+		}
+
+		searchNumber = resultLineMultiplicationMatrix[elementColumnNuber];
 
 		writeDataInFile(outputPath, searchNumber);
 
 	}
 
-	public int[][] multiplicationMatrix(int[][] firstMatrix, int indexSecondMatrix) {
+	public int[] multiplicationMatrix(int[] lineFirstMatrix, int indexSecondMatrix) {
 
-		int[][] resultMatrix = new int[matrixSize][matrixSize];
+		int[] lineResultMatrix = new int[matrixSize];
+		int elementResultMatrix = 0;
 
-			for (int line = 0; line < matrixSize; line++) {
+		for (int column = 0; column < matrixSize; column++) {
+			
+			elementResultMatrix = 0;
 
-				for (int column = 0; column < matrixSize; column++) {
+			for (int i = 0; i < matrixSize; i++) {
 
-					resultMatrix[line][column] = calculateComponentResultMatrix(firstMatrix, indexSecondMatrix, line,
-							column);
-				}
+				elementResultMatrix = elementResultMatrix + lineFirstMatrix[i] * allMatrix[indexSecondMatrix][i][column];
 			}
 
-		return resultMatrix;
-	}
+			if (elementResultMatrix >= simpleNumber) {
+				elementResultMatrix = elementResultMatrix % simpleNumber;
+			}
+			
+			lineResultMatrix[column] = elementResultMatrix;
 
-	public int calculateComponentResultMatrix(int[][] firstMatrix, int indexMatrix, int multiplicationLine,
-			int multiplicationColumn) {
-
-		int component = 0;
-
-		for (int i = 0; i < firstMatrix.length; i++) {
-
-			component = component
-					+ firstMatrix[multiplicationLine][i] * allMatrix[indexMatrix][i][multiplicationColumn];
 		}
 
-		if (component >= simpleNumber) {
-			component = component % simpleNumber;
-		}
-
-		return component;
+		return lineResultMatrix;
 	}
 
 	public void readDataFromFile(String inputPath) {
@@ -108,8 +101,8 @@ public class Task557 {
 				for (int indexLineMatrix = 0; indexLineMatrix < matrixSize; indexLineMatrix++) {
 
 					elementInLine = bufferedReader.readLine().split(" ");
-					
-					for(int indexColumnMatrix = 0; indexColumnMatrix<elementInLine.length; indexColumnMatrix++) {
+
+					for (int indexColumnMatrix = 0; indexColumnMatrix < elementInLine.length; indexColumnMatrix++) {
 						matrix[indexLineMatrix][indexColumnMatrix] = Integer.parseInt(elementInLine[indexColumnMatrix]);
 					}
 
