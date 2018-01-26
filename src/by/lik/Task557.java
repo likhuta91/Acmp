@@ -20,22 +20,17 @@ public class Task557 {
 
 		String inputPath = "C:\\INPUT.TXT";
 		String outputPath = "C:\\OUTPUT.TXT";
-
 		Task557 task = new Task557();
 		task.searchElement(inputPath, outputPath);
 
 	}
-	
+
 	public void searchElement(String inputPath, String outputPath) {
 
 		int searchNumber;
 		readDataFromFile(inputPath);
-		
-		int[] resultLineMultiplicationMatrix = new int[matrixSize];
 
-		for (int i = 0; i < matrixSize; i++) {
-			resultLineMultiplicationMatrix[i] = allMatrix[0][elementLineNumber][i];
-		}
+		int[] resultLineMultiplicationMatrix = allMatrix[0][elementLineNumber];
 
 		for (int i = 1; i < allMatrix.length; i++) {
 			resultLineMultiplicationMatrix = multiplicationMatrix(resultLineMultiplicationMatrix, i);
@@ -53,18 +48,19 @@ public class Task557 {
 		int elementResultMatrix = 0;
 
 		for (int column = 0; column < matrixSize; column++) {
-			
+
 			elementResultMatrix = 0;
 
 			for (int i = 0; i < matrixSize; i++) {
 
-				elementResultMatrix = elementResultMatrix + lineFirstMatrix[i] * allMatrix[indexSecondMatrix][i][column];
+				elementResultMatrix = elementResultMatrix
+						+ lineFirstMatrix[i] * allMatrix[indexSecondMatrix][i][column];
 			}
 
 			if (elementResultMatrix >= simpleNumber) {
 				elementResultMatrix = elementResultMatrix % simpleNumber;
 			}
-			
+
 			lineResultMatrix[column] = elementResultMatrix;
 
 		}
