@@ -10,8 +10,8 @@ import java.io.OutputStreamWriter;
 
 public class Task557 {
 
-	private int[][][] allMatrix;
 	private int matrixSize;
+	private int numberOfMatrix;
 	private int elementLineNumber;
 	private int elementColumnNuber;
 	private int simpleNumber;
@@ -28,21 +28,34 @@ public class Task557 {
 	public void searchElement(String inputPath, String outputPath) {
 
 		int searchNumber;
-		readDataFromFile(inputPath);
+		int[][] matrix;
+		int[] resultLineMultiplicationMatrix;
+		
+		try (FileInputStream fis = new FileInputStream(inputPath);
+				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fis))) {
+			
+			readInitialDataFromFile(bufferedReader);
 
-		int[] resultLineMultiplicationMatrix = allMatrix[0][elementLineNumber];
+			matrix = readMatrixFromFile(bufferedReader);
+			resultLineMultiplicationMatrix = matrix[elementLineNumber];
+			
+			for (int indexMatrix = 1; indexMatrix < numberOfMatrix; indexMatrix++) {
 
-		for (int i = 1; i < allMatrix.length; i++) {
-			resultLineMultiplicationMatrix = multiplicationMatrix(resultLineMultiplicationMatrix, i);
+				matrix = readMatrixFromFile(bufferedReader);
+				resultLineMultiplicationMatrix = multiplicationMatrix(resultLineMultiplicationMatrix, matrix);
+			}
+			
+			searchNumber = resultLineMultiplicationMatrix[elementColumnNuber];
+
+			writeDataInFile(outputPath, searchNumber);
+
+		} catch (IOException exception) {
+			exception.printStackTrace();
 		}
-
-		searchNumber = resultLineMultiplicationMatrix[elementColumnNuber];
-
-		writeDataInFile(outputPath, searchNumber);
 
 	}
 
-	public int[] multiplicationMatrix(int[] lineFirstMatrix, int indexSecondMatrix) {
+	public int[] multiplicationMatrix(int[] lineFirstMatrix, int [][] secondMatrix) {
 
 		int[] lineResultMatrix = new int[matrixSize];
 		int elementResultMatrix = 0;
@@ -54,7 +67,7 @@ public class Task557 {
 			for (int i = 0; i < matrixSize; i++) {
 
 				elementResultMatrix = elementResultMatrix
-						+ lineFirstMatrix[i] * allMatrix[indexSecondMatrix][i][column];
+						+ lineFirstMatrix[i] * secondMatrix[i][column];
 			}
 
 			if (elementResultMatrix >= simpleNumber) {
@@ -68,48 +81,36 @@ public class Task557 {
 		return lineResultMatrix;
 	}
 
-	public void readDataFromFile(String inputPath) {
-
+	public int [][] readMatrixFromFile(BufferedReader bufferedReader) throws IOException {
 		String[] elementInLine;
-		int[][] matrix;
-		int numberOfMatrix;
+		bufferedReader.readLine();
+		int[][] matrix = new int[matrixSize][matrixSize];
 
-		try (FileInputStream fis = new FileInputStream(inputPath);
-				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fis))) {
-
-			elementInLine = bufferedReader.readLine().split(" ");
-			numberOfMatrix = Integer.parseInt(elementInLine[0]);
-			matrixSize = Integer.parseInt(elementInLine[1]);
+		for (int indexLineMatrix = 0; indexLineMatrix < matrixSize; indexLineMatrix++) {
 
 			elementInLine = bufferedReader.readLine().split(" ");
-			elementLineNumber = Integer.parseInt(elementInLine[0]) - 1;
-			elementColumnNuber = Integer.parseInt(elementInLine[1]) - 1;
 
-			simpleNumber = Integer.parseInt(bufferedReader.readLine());
-
-			allMatrix = new int[numberOfMatrix][matrixSize][matrixSize];
-
-			for (int indexMatrix = 0; indexMatrix < numberOfMatrix; indexMatrix++) {
-
-				bufferedReader.readLine();
-				matrix = new int[matrixSize][matrixSize];
-
-				for (int indexLineMatrix = 0; indexLineMatrix < matrixSize; indexLineMatrix++) {
-
-					elementInLine = bufferedReader.readLine().split(" ");
-
-					for (int indexColumnMatrix = 0; indexColumnMatrix < elementInLine.length; indexColumnMatrix++) {
-						matrix[indexLineMatrix][indexColumnMatrix] = Integer.parseInt(elementInLine[indexColumnMatrix]);
-					}
-
-				}
-
-				allMatrix[indexMatrix] = matrix;
+			for (int indexColumnMatrix = 0; indexColumnMatrix < elementInLine.length; indexColumnMatrix++) {
+				matrix[indexLineMatrix][indexColumnMatrix] = Integer.parseInt(elementInLine[indexColumnMatrix]);
 			}
 
-		} catch (IOException exception) {
-			exception.printStackTrace();
 		}
+		return matrix;
+	}
+	
+	public void readInitialDataFromFile(BufferedReader bufferedReader) throws IOException {
+		
+		String[] elementInLine;
+				
+		elementInLine = bufferedReader.readLine().split(" ");
+		numberOfMatrix = Integer.parseInt(elementInLine[0]);
+		matrixSize = Integer.parseInt(elementInLine[1]);
+
+		elementInLine = bufferedReader.readLine().split(" ");
+		elementLineNumber = Integer.parseInt(elementInLine[0]) - 1;
+		elementColumnNuber = Integer.parseInt(elementInLine[1]) - 1;
+
+		simpleNumber = Integer.parseInt(bufferedReader.readLine());
 	}
 
 	public void writeDataInFile(String outputPath, int number) {
